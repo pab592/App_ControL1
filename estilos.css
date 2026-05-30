@@ -88,10 +88,25 @@ h1 {
     box-shadow: 0 2px 4px rgba(0,0,0,0.04);
     cursor: move;
     position: relative;
-    touch-action: none;  /* ✅ OBLIGATORIO: bloquea que se desplace la página al arrastrar */
-    -webkit-user-select: none; /* ✅ Evita que se seleccione texto al arrastrar */
-    user-select: none;
+    touch-action: none;       /* 🔑 OBLIGATORIO: bloquea scroll */
+    user-select: none;        /* no selecciona texto */
+    -webkit-user-select: none;
 }
+
+/* Estilo cuando lo estás moviendo */
+.arrastrando {
+    opacity: 0.6;
+    transform: scale(0.95);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+    z-index: 999;
+    pointer-events: none;
+}
+
+.zona-activa {
+    background: rgba(90, 111, 128, 0.1);
+    border-radius: 12px;
+}
+
 
 .tarjeta .fecha {
     font-size: 0.8rem;

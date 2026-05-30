@@ -284,79 +284,71 @@ cargarDatos();
 mostrarTodo();
 actualizarReloj();
 
-// ==============================================
-// ARRASTRE PC + CELULAR 100% FUNCIONAL
-// ==============================================
-let tarjetaArrastrada = null;
-let zonaDestino = null;
+// 🚀 ARRASTRE DEFINITIVO: PC + CELULAR 100% FUNCIONAL
+let arrastrando = null;
+let inicioX, inicioY;
+let zonaActual = null;
 
-// 📌 INICIO: Táctil + Ratón
+// 📌 INICIO: RATÓN + TÁCTIL
 document.querySelectorAll('.tarjeta').forEach(tarjeta => {
-    // RATÓN
-    tarjeta.draggable = true;
-    tarjeta.addEventListener('dragstart', e => {
-        tarjetaArrastrada = tarjeta;
+    // Ratón
+    tarjeta.addEventListener('mousedown', e => {
+        arrastrando = tarjeta;
+        inicioX = e.clientX;
+        inicioY = e.clientY;
         tarjeta.classList.add('arrastrando');
-        e.dataTransfer.setData('text/plain', '');
-    });
-    tarjeta.addEventListener('dragend', () => {
-        tarjeta.classList.remove('arrastrando');
-        tarjetaArrastrada = null;
     });
 
-    // 📱 TÁCTIL (LO QUE FALTABA)
+    // 📱 TÁCTIL (LO QUE REALMENTE FUNCIONA)
     tarjeta.addEventListener('touchstart', e => {
-        tarjetaArrastrada = tarjeta;
+        arrastrando = tarjeta;
+        const t = e.touches[0];
+        inicioX = t.clientX;
+        inicioY = t.clientY;
         tarjeta.classList.add('arrastrando');
     }, { passive: true });
-
-    tarjeta.addEventListener('touchmove', e => {
-        if (!tarjetaArrastrada) return;
-        e.preventDefault(); // ❌ NO DEJA QUE SE MUEVA LA PÁGINA
-
-        // Detectar SOBRE QUÉ ZONA ESTÁS ARRASTRANDO
-        const toque = e.touches[0];
-        const elementoAbajo = document.elementFromPoint(toque.clientX, toque.clientY);
-        zonaDestino = elementoAbajo?.closest('.zona-tareas');
-    }, { passive: false });
-
-    tarjeta.addEventListener('touchend', e => {
-        if (!tarjetaArrastrada) return;
-
-        // ✅ SI SOLTASTE EN UNA ZONA VÁLIDA → LA METE
-        if (zonaDestino) {
-            zonaDestino.appendChild(tarjetaArrastrada);
-            // 🟡 AQUÍ PUEDES AGREGAR TU CÓDIGO DE GUARDADO
-        }
-
-        tarjetaArrastrada.classList.remove('arrastrando');
-        tarjetaArrastrada = null;
-        zonaDestino = null;
-    });
 });
 
-// 📌 ZONAS DONDE SOLTAR (PC + CELULAR)
-document.querySelectorAll('.zona-tareas').forEach(zona => {
-    // PC
-    zona.addEventListener('dragover', e => {
-        e.preventDefault(); // ✅ PERMITE SOLTAR AQUÍ
-    });
-    zona.addEventListener('drop', e => {
-        e.preventDefault();
-        if (tarjetaArrastrada) {
-            zona.appendChild(tarjetaArrastrada);
-            // 🟡 AQUÍ GUARDAS EL CAMBIO
-        }
-    });
+// 📌 MIENTRAS MUEVES
+document.addEventListener('mousemove', e => {
+    if (!arrastrando) return;
+    detectarZona(e.clientX, e.clientY);
 });
 
-// ✅ Estilo visual al arrastrar
-const estilo = document.createElement('style');
-estilo.textContent = `
-.arrastrando {
-    opacity: 0.6;
-    transform: scale(0.95);
-    box-shadow: 0 5px 10px rgba(0,0,0,0.15);
+document.addEventListener('touchmove', e => {
+    if (!arrastrando) return;
+    e.preventDefault(); // ❌ NO DEJA QUE SE MUEVA LA PÁGINA
+    const t = e.touches[0];
+    detectarZona(t.clientX, t.clientY);
+}, { passive: false });
+
+// 📌 SOLTAR → AQUÍ SE HACE EL CAMBIO
+document.addEventListener('mouseup', soltarTarjeta);
+document.addEventListener('touchend', soltarTarjeta);
+
+function soltarTarjeta() {
+    if (!arrastrando) return;
+
+    // ✅ SI ESTABA SOBRE UNA COLUMNA → LO METE
+    if (zonaActual) {
+        zonaActual.appendChild(arrastrando);
+        zonaActual.classList.remove('zona-activa');
+        // 🟡 AQUÍ PONES TU CÓDIGO DE GUARDADO (SI LO TIENES)
+    }
+
+    arrastrando.classList.remove('arrastrando');
+    arrastrando = null;
+    zonaActual = null;
 }
-`;
-document.head.appendChild(estilo);
+
+// 🔍 DETECTA EN QUÉ COLUMNA ESTÁS ARRASTRANDO
+function detectarZona(x, y) {
+    // Limpiar resaltado anterior
+    document.querySelectorAll('.zona-tareas').forEach(z => z.classList.remove('zona-activa'));
+
+    // Buscar debajo del dedo/ratón
+    const elemento = document.elementFromPoint(x, y);
+    zonaActual = elemento?.closest('.zona-tareas');
+
+    if (zonaActual) zonaActual.classList.add('zona-activa');
+}
