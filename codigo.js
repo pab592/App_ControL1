@@ -283,3 +283,15 @@ function habilitarArrastre(){
 cargarDatos();
 mostrarTodo();
 actualizarReloj();
+
+// 📱 ACTIVAR ARRASTRE EN CELULAR + CORREGIR SCROLL
+document.querySelectorAll('.tarjeta').forEach(tarjeta => {
+    tarjeta.setAttribute('draggable', 'true');
+    // Evita que se mueva la página cuando arrastras
+    tarjeta.addEventListener('touchmove', e => e.preventDefault(), {passive: false});
+});
+
+// A las zonas donde sueltas también les activamos
+document.querySelectorAll('.zona-tareas').forEach(zona => {
+    zona.addEventListener('touchmove', e => e.preventDefault(), {passive: false});
+});
