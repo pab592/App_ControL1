@@ -1,5 +1,9 @@
 // ==============================================
-// POMODORO COMPLETO - TODO LO QUE PEDISTE
+// 🚀 TODO EL CÓDIGO COMPLETO - ARRASTRE PC + CELULAR ✅
+// ==============================================
+
+// ==============================================
+// ⏱️ POMODORO - COMPLETO Y FUNCIONAL
 // ==============================================
 let tiempo = 25 * 60;
 let tiempoTrabajo = 25;
@@ -12,7 +16,7 @@ let intervalo;
 let ciclosCompletados = 0;
 let tiempoTotalAcumulado = 0;
 
-// ELEMENTOS
+// ELEMENTOS POMODORO
 const tiempoTexto = document.getElementById('tiempoTexto');
 const barra = document.getElementById('barraProgreso');
 const btnIniciar = document.getElementById('btnIniciar');
@@ -164,7 +168,7 @@ btnEnfoque.addEventListener('click', () => {
 });
 btnSalirEnfoque.addEventListener('click', () => modoEnfoque.classList.remove('activo'));
 
-// GUARDAR / CARGAR DATOS
+// GUARDAR / CARGAR DATOS POMODORO
 function guardarDatos(){
     localStorage.setItem('datosPomodoro', JSON.stringify({
         ciclos: ciclosCompletados,
@@ -194,7 +198,7 @@ function reiniciarTodo(){
 }
 
 // ==============================================
-// GESTIÓN DE TAREAS (SIGUE IGUAL DE FUNCIONAL)
+// 📋 GESTIÓN DE TAREAS
 // ==============================================
 let tareas = JSON.parse(localStorage.getItem('misTareas')) || [];
 
@@ -203,6 +207,7 @@ const inputFecha = document.getElementById('inputFecha');
 const btnAgregar = document.getElementById('btnAgregar');
 const columnas = document.querySelectorAll('.columna');
 
+// AGREGAR TAREA
 btnAgregar.addEventListener('click', () => {
     let texto = inputTarea.value.trim();
     let fecha = inputFecha.value.trim();
@@ -213,12 +218,14 @@ btnAgregar.addEventListener('click', () => {
     guardarYmostrar();
 });
 
+// VER SI ESTÁ VENCIDA
 function estaVencida(fechaStr){
     let [d,m,a] = fechaStr.split('/').map(Number);
     let entrega = new Date(2000+a, m-1, d);
     return entrega < new Date();
 }
 
+// MOSTRAR TODO EN PANTALLA
 function mostrarTodo(){
     columnas.forEach(col => col.querySelector('.zona-tareas').innerHTML = '');
 
@@ -228,7 +235,6 @@ function mostrarTodo(){
         let zona = document.getElementById(t.estado).querySelector('.zona-tareas');
         let tarjeta = document.createElement('div');
         tarjeta.className = `tarjeta ${t.estado==='completado'?'completada':''}`;
-        tarjeta.draggable = true;
         tarjeta.dataset.id = t.id;
 
         tarjeta.innerHTML = `
@@ -240,6 +246,7 @@ function mostrarTodo(){
             </div>
         `;
 
+        // EDITAR TAREA
         tarjeta.querySelector('.editar').addEventListener('click', () => {
             let nuevoTexto = prompt('Editar tarea:', t.texto);
             let nuevaFecha = prompt('Editar fecha:', t.fecha);
@@ -249,6 +256,7 @@ function mostrarTodo(){
             }
         });
 
+        // BORRAR TAREA
         tarjeta.querySelector('.borrar').addEventListener('click', () => {
             tareas = tareas.filter(x => x.id != t.id);
             guardarYmostrar();
@@ -257,40 +265,67 @@ function mostrarTodo(){
         zona.appendChild(tarjeta);
     });
 
+    // ✅ ACTIVAMOS EL ARRASTRE DESPUÉS DE DIBUJAR
     habilitarArrastre();
 }
 
+// GUARDAR EN LOCALSTORAGE
 function guardarYmostrar(){
     localStorage.setItem('misTareas', JSON.stringify(tareas));
     mostrarTodo();
 }
 
-// ✅ FUNCIÓN PARA ACTUALIZAR EL ESTADO Y GUARDAR
+// ==============================================
+// 📱 ARRASTRE DEFINITIVO PC + CELULAR ✅ (SORTABLEJS)
+// ==============================================
+function habilitarArrastre() {
+    // Seleccionamos todas las zonas donde van las tareas
+    const zonas = document.querySelectorAll('.zona-tareas');
+
+    zonas.forEach(zona => {
+        new Sortable(zona, {
+            group: 'tareas',         // Permite mover entre columnas
+            animation: 150,          // Animación suavecita
+            touchStartThreshold: 5,  // Espera poquito antes de mover (evita errores)
+
+            // Clases CSS para los efectos visuales
+            ghostClass: 'tarjeta-arrastrando',
+            chosenClass: 'tarjeta-seleccionada',
+
+            // ✅ CUANDO TERMINAS DE MOVER → ACTUALIZAMOS Y GUARDAMOS
+            onEnd: function () {
+                actualizarEstadoTareas();
+            }
+        });
+    });
+}
+
+// ✅ FUNCIÓN: LE DICE AL SISTEMA EN QUÉ COLUMNA QUEDÓ CADA TAREA Y LO GUARDA
 function actualizarEstadoTareas() {
-    tareas = []; // Limpiamos el arreglo
+    tareas = []; // Limpiamos el arreglo viejo
 
-    // Recorremos cada columna para saber en qué estado está cada tarea
+    // Recorremos cada columna
     document.querySelectorAll('.columna').forEach(columna => {
-        const estado = columna.id; // por-hacer, en-progreso, etc.
+        const estadoColumna = columna.id; // por-hacer, en-progreso, vencidas, completado
 
+        // Recorremos cada tarea dentro de esa columna
         columna.querySelectorAll('.tarjeta').forEach(tarjetaEl => {
             tareas.push({
                 id: parseInt(tarjetaEl.dataset.id),
                 texto: tarjetaEl.querySelector('div:nth-child(2)').textContent,
                 fecha: tarjetaEl.querySelector('.fecha').textContent.replace('Entrega: ', ''),
-                estado: estado // ✅ Guardamos la nueva columna donde quedó
+                estado: estadoColumna // Guardamos la nueva posición
             });
         });
     });
 
-    // Guardamos en memoria
+    // Guardamos todo actualizado
     localStorage.setItem('misTareas', JSON.stringify(tareas));
 }
 
-// INICIAR TODO
+// ==============================================
+// 🚀 INICIAR TODO AL CARGAR LA PÁGINA
+// ==============================================
 cargarDatos();
 mostrarTodo();
 actualizarReloj();
-
-
-
