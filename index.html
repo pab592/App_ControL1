@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Espacio de Enfoque ✨</title>
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+    <div class="contenedor" id="contenedorPrincipal">
+        <h1>Mi Espacio de Enfoque</h1>
+
+        <!-- AGREGAR TAREA -->
+        <div class="caja-agregar">
+            <input type="text" id="inputTarea" placeholder="Escribe tu tarea...">
+            <input type="text" id="inputFecha" placeholder="dd/mm/aa" maxlength="8">
+            <button id="btnAgregar">Agregar</button>
+        </div>
+
+        <!-- COLUMNAS -->
+        <div class="fila-columnas">
+            <div class="columna azul" id="por-hacer">
+                <h2>Por Hacer</h2>
+                <div class="zona-tareas"></div>
+            </div>
+
+            <div class="columna verde" id="en-progreso">
+                <h2>En Progreso</h2>
+                <div class="zona-tareas"></div>
+            </div>
+
+            <div class="columna rojo" id="vencidas">
+                <h2>Tareas Vencidas</h2>
+                <div class="zona-tareas"></div>
+            </div>
+
+            <div class="columna naranja" id="completado">
+                <h2>Completado</h2>
+                <div class="zona-tareas"></div>
+            </div>
+        </div>
+
+        <!-- POMODORO COMPLETO -->
+        <div class="caja-pomodoro">
+            <div class="texto-pomodoro">
+                <h2>⏱️ Temporizador Pomodoro</h2>
+                
+                <!-- NOMBRE DE LA SESIÓN -->
+                <div class="nombre-sesion">
+                    <input type="text" id="nombreSesion" placeholder="¿Qué vas a hacer hoy? (ej: Estudiar, Trabajar...)">
+                </div>
+
+                <!-- ESTADO Y CONTADORES -->
+                <p id="estadoTiempo">Modo: Trabajo 🌱</p>
+                <div class="contadores">
+                    <span>🔄 Ciclos hoy: <strong id="contadorCiclos">0</strong>/4</span>
+                    <span>⏱️ Tiempo total: <strong id="tiempoTotal">0 min</strong></span>
+                </div>
+
+                <!-- OPCIONES DE TIEMPO -->
+                <div class="opciones-tiempo">
+                    <button class="btn-tiempo activo" data-trabajo="25" data-descanso="5" data-largo="15">25/5/15</button>
+                    <button class="btn-tiempo" data-trabajo="30" data-descanso="10" data-largo="20">30/10/20</button>
+                    <button class="btn-tiempo" id="btnPersonalizado">✍️ Personalizado</button>
+                </div>
+
+                <!-- BOTONES PRINCIPALES -->
+                <div class="botones">
+                    <button id="btnIniciar">Iniciar</button>
+                    <button id="btnReiniciar">Reiniciar</button>
+                    <button id="btnEnfoque">🎯 Enfoque</button>
+                </div>
+            </div>
+
+            <!-- RELOJ CIRCULAR -->
+            <div class="circulo">
+                <svg viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="45" class="fondo"></circle>
+                    <circle id="barraProgreso" cx="50" cy="50" r="45" class="progreso"></circle>
+                </svg>
+                <span id="tiempoTexto">25:00</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODO ENFOQUE (SOLO RELOJ) -->
+    <div class="modo-enfoque" id="modoEnfoque">
+        <button id="btnSalirEnfoque">✖️ Salir de Enfoque</button>
+        <div class="circulo-grande">
+            <svg viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" class="fondo"></circle>
+                <circle id="barraEnfoque" cx="50" cy="50" r="45" class="progreso"></circle>
+            </svg>
+            <span id="tiempoEnfoque">25:00</span>
+            <p id="estadoEnfoque">Trabajo 🌱</p>
+            <h3 id="nombreEnfoque"></h3>
+        </div>
+    </div>
+
+    <!-- SONIDO DE AVISO -->
+    <audio id="sonidoAviso" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto">
+
+    <script src="codigo.js"></script>
+</body>
+</html>
