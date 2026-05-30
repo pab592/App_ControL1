@@ -284,3 +284,79 @@ cargarDatos();
 mostrarTodo();
 actualizarReloj();
 
+// ==============================================
+// ARRASTRE PC + CELULAR 100% FUNCIONAL
+// ==============================================
+let tarjetaArrastrada = null;
+let zonaDestino = null;
+
+// 📌 INICIO: Táctil + Ratón
+document.querySelectorAll('.tarjeta').forEach(tarjeta => {
+    // RATÓN
+    tarjeta.draggable = true;
+    tarjeta.addEventListener('dragstart', e => {
+        tarjetaArrastrada = tarjeta;
+        tarjeta.classList.add('arrastrando');
+        e.dataTransfer.setData('text/plain', '');
+    });
+    tarjeta.addEventListener('dragend', () => {
+        tarjeta.classList.remove('arrastrando');
+        tarjetaArrastrada = null;
+    });
+
+    // 📱 TÁCTIL (LO QUE FALTABA)
+    tarjeta.addEventListener('touchstart', e => {
+        tarjetaArrastrada = tarjeta;
+        tarjeta.classList.add('arrastrando');
+    }, { passive: true });
+
+    tarjeta.addEventListener('touchmove', e => {
+        if (!tarjetaArrastrada) return;
+        e.preventDefault(); // ❌ NO DEJA QUE SE MUEVA LA PÁGINA
+
+        // Detectar SOBRE QUÉ ZONA ESTÁS ARRASTRANDO
+        const toque = e.touches[0];
+        const elementoAbajo = document.elementFromPoint(toque.clientX, toque.clientY);
+        zonaDestino = elementoAbajo?.closest('.zona-tareas');
+    }, { passive: false });
+
+    tarjeta.addEventListener('touchend', e => {
+        if (!tarjetaArrastrada) return;
+
+        // ✅ SI SOLTASTE EN UNA ZONA VÁLIDA → LA METE
+        if (zonaDestino) {
+            zonaDestino.appendChild(tarjetaArrastrada);
+            // 🟡 AQUÍ PUEDES AGREGAR TU CÓDIGO DE GUARDADO
+        }
+
+        tarjetaArrastrada.classList.remove('arrastrando');
+        tarjetaArrastrada = null;
+        zonaDestino = null;
+    });
+});
+
+// 📌 ZONAS DONDE SOLTAR (PC + CELULAR)
+document.querySelectorAll('.zona-tareas').forEach(zona => {
+    // PC
+    zona.addEventListener('dragover', e => {
+        e.preventDefault(); // ✅ PERMITE SOLTAR AQUÍ
+    });
+    zona.addEventListener('drop', e => {
+        e.preventDefault();
+        if (tarjetaArrastrada) {
+            zona.appendChild(tarjetaArrastrada);
+            // 🟡 AQUÍ GUARDAS EL CAMBIO
+        }
+    });
+});
+
+// ✅ Estilo visual al arrastrar
+const estilo = document.createElement('style');
+estilo.textContent = `
+.arrastrando {
+    opacity: 0.6;
+    transform: scale(0.95);
+    box-shadow: 0 5px 10px rgba(0,0,0,0.15);
+}
+`;
+document.head.appendChild(estilo);
