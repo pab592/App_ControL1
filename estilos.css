@@ -88,24 +88,13 @@ h1 {
     box-shadow: 0 2px 4px rgba(0,0,0,0.04);
     cursor: move;
     position: relative;
-    touch-action: none;       /* 🔑 OBLIGATORIO: bloquea scroll */
-    user-select: none;        /* no selecciona texto */
+
+    /* ✅ ESTAS 3 LÍNEAS SON OBLIGATORIAS PARA CELULAR */
+    touch-action: none;       /* Bloquea que se mueva la página al arrastrar */
+    user-select: none;        /* No selecciona el texto */
     -webkit-user-select: none;
 }
 
-/* Estilo cuando lo estás moviendo */
-.arrastrando {
-    opacity: 0.6;
-    transform: scale(0.95);
-    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
-    z-index: 999;
-    pointer-events: none;
-}
-
-.zona-activa {
-    background: rgba(90, 111, 128, 0.1);
-    border-radius: 12px;
-}
 
 
 .tarjeta .fecha {
@@ -381,4 +370,15 @@ svg {
     h1 { font-size: 1.4rem; }
     .tarjeta { font-size: 0.85rem; padding: 10px; }
     .btn-tiempo { font-size: 0.75rem; padding: 5px 10px; }
+}
+
+/* ✅ EFECTOS AL ARRASTRAR */
+.tarjeta-arrastrando {
+    opacity: 0.6;
+    transform: scale(0.95);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+}
+
+.tarjeta-seleccionada {
+    background-color: #e0ebff;
 }

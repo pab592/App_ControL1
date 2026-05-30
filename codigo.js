@@ -265,18 +265,26 @@ function guardarYmostrar(){
     mostrarTodo();
 }
 
-function habilitarArrastre(){
-    let arrastrando = null;
-    document.querySelectorAll('.tarjeta').forEach(t => t.addEventListener('dragstart', e => arrastrando = t.dataset.id));
-    columnas.forEach(col => {
-        col.addEventListener('dragover', e => e.preventDefault());
-        col.addEventListener('drop', () => {
-            if(!arrastrando) return;
-            let tarea = tareas.find(x => x.id == arrastrando);
-            if(tarea) { tarea.estado = col.id; guardarYmostrar(); }
-            arrastrando = null;
+// ✅ FUNCIÓN PARA ACTUALIZAR EL ESTADO Y GUARDAR
+function actualizarEstadoTareas() {
+    tareas = []; // Limpiamos el arreglo
+
+    // Recorremos cada columna para saber en qué estado está cada tarea
+    document.querySelectorAll('.columna').forEach(columna => {
+        const estado = columna.id; // por-hacer, en-progreso, etc.
+
+        columna.querySelectorAll('.tarjeta').forEach(tarjetaEl => {
+            tareas.push({
+                id: parseInt(tarjetaEl.dataset.id),
+                texto: tarjetaEl.querySelector('div:nth-child(2)').textContent,
+                fecha: tarjetaEl.querySelector('.fecha').textContent.replace('Entrega: ', ''),
+                estado: estado // ✅ Guardamos la nueva columna donde quedó
+            });
         });
     });
+
+    // Guardamos en memoria
+    localStorage.setItem('misTareas', JSON.stringify(tareas));
 }
 
 // INICIAR TODO
@@ -284,71 +292,5 @@ cargarDatos();
 mostrarTodo();
 actualizarReloj();
 
-// 🚀 ARRASTRE DEFINITIVO: PC + CELULAR 100% FUNCIONAL
-let arrastrando = null;
-let inicioX, inicioY;
-let zonaActual = null;
 
-// 📌 INICIO: RATÓN + TÁCTIL
-document.querySelectorAll('.tarjeta').forEach(tarjeta => {
-    // Ratón
-    tarjeta.addEventListener('mousedown', e => {
-        arrastrando = tarjeta;
-        inicioX = e.clientX;
-        inicioY = e.clientY;
-        tarjeta.classList.add('arrastrando');
-    });
 
-    // 📱 TÁCTIL (LO QUE REALMENTE FUNCIONA)
-    tarjeta.addEventListener('touchstart', e => {
-        arrastrando = tarjeta;
-        const t = e.touches[0];
-        inicioX = t.clientX;
-        inicioY = t.clientY;
-        tarjeta.classList.add('arrastrando');
-    }, { passive: true });
-});
-
-// 📌 MIENTRAS MUEVES
-document.addEventListener('mousemove', e => {
-    if (!arrastrando) return;
-    detectarZona(e.clientX, e.clientY);
-});
-
-document.addEventListener('touchmove', e => {
-    if (!arrastrando) return;
-    e.preventDefault(); // ❌ NO DEJA QUE SE MUEVA LA PÁGINA
-    const t = e.touches[0];
-    detectarZona(t.clientX, t.clientY);
-}, { passive: false });
-
-// 📌 SOLTAR → AQUÍ SE HACE EL CAMBIO
-document.addEventListener('mouseup', soltarTarjeta);
-document.addEventListener('touchend', soltarTarjeta);
-
-function soltarTarjeta() {
-    if (!arrastrando) return;
-
-    // ✅ SI ESTABA SOBRE UNA COLUMNA → LO METE
-    if (zonaActual) {
-        zonaActual.appendChild(arrastrando);
-        zonaActual.classList.remove('zona-activa');
-        // 🟡 AQUÍ PONES TU CÓDIGO DE GUARDADO (SI LO TIENES)
-    }
-
-    arrastrando.classList.remove('arrastrando');
-    arrastrando = null;
-    zonaActual = null;
-}
-
-// 🔍 DETECTA EN QUÉ COLUMNA ESTÁS ARRASTRANDO
-function detectarZona(x, y) {
-    // Limpiar resaltado anterior
-    document.querySelectorAll('.zona-tareas').forEach(z => z.classList.remove('zona-activa'));
-
-    // Buscar debajo del dedo/ratón
-    const elemento = document.elementFromPoint(x, y);
-    zonaActual = elemento?.closest('.zona-tareas');
-
-    if (zonaActual) zonaActual.classList.add('zona-activa');
-}
