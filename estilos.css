@@ -88,8 +88,11 @@ h1 {
     box-shadow: 0 2px 4px rgba(0,0,0,0.04);
     cursor: move;
     position: relative;
-    touch-action: none; /* Para que funcione el arrastrar en celular */
+    touch-action: none;  /* ✅ OBLIGATORIO: bloquea que se desplace la página al arrastrar */
+    -webkit-user-select: none; /* ✅ Evita que se seleccione texto al arrastrar */
+    user-select: none;
 }
+
 .tarjeta .fecha {
     font-size: 0.8rem;
     color: #666;
