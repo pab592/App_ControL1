@@ -233,8 +233,9 @@ function mostrarTodo(){
         if(t.estado !== 'completado' && estaVencida(t.fecha)) t.estado = 'vencidas';
 
         let zona = document.getElementById(t.estado).querySelector('.zona-tareas');
+        // ✅ CORREGIDO: SI ES COMPLETADA, LE PONEMOS LA CLASE PARA QUE SE TACHE Y SE VEA TRANSPARENTE
         let tarjeta = document.createElement('div');
-        tarjeta.className = `tarjeta ${t.estado==='completado'?'completada':''}`;
+        tarjeta.className = `tarjeta ${t.estado === 'completado' ? 'completada' : ''}`;
         tarjeta.dataset.id = t.id;
 
         tarjeta.innerHTML = `
@@ -316,6 +317,12 @@ function actualizarEstadoTareas() {
                 fecha: tarjetaEl.querySelector('.fecha').textContent.replace('Entrega: ', ''),
                 estado: estadoColumna // Guardamos la nueva posición
             });
+            // ✅ CORREGIDO: SI ESTÁ EN COMPLETADO, ASEGURAMOS LA CLASE
+            if (estadoColumna === 'completado') {
+                tarjetaEl.classList.add('completada');
+            } else {
+                tarjetaEl.classList.remove('completada');
+            }
         });
     });
 
